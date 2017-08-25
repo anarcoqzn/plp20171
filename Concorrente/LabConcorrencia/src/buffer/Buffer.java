@@ -3,7 +3,7 @@ package buffer;
 public class Buffer {
 	
 	private int produto;
-
+	
 	public Buffer() {
 		this.produto = 0;
 	}
@@ -12,13 +12,20 @@ public class Buffer {
 		return produto == 0;		
 	}
 	
-	public synchronized void adicionaProduto(int produto) {
-		this.produto = produto;
+	public void adicionaProduto(int produto) {
+		synchronized (this) {
+			this.produto = produto;	
+			notify();
+		}
 	}
 	
-	public synchronized int getProduto() {
-		int temp = this.produto;
-		this.produto--;
+	public int getProduto() {
+		int temp = 0;
+		synchronized (this) {
+			temp = this.produto;
+			this.produto = 0;
+			notify();
+		}
 		return temp;
 	}
 	

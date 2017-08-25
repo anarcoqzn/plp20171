@@ -6,13 +6,12 @@ public class Produtor extends Operador implements Runnable{
 	
 	private int totalProduzir;
 	private int totalProduzidos;
-	public static Thread produtor;
+
 	
 	public Produtor(int id, Buffer bufferCompartilhado, int totalProduzir) {
 		super(id, bufferCompartilhado);
 		setTotalProduzir(totalProduzir);
 		this.totalProduzidos = 0;
-		produtor = new Thread();
 	}
 	
 	//GETTTERS AND SETTERS
@@ -34,14 +33,15 @@ public class Produtor extends Operador implements Runnable{
 				totalProduzidos++;
 				bufferCompartilhado.adicionaProduto(totalProduzidos);
 				System.out.println(toString()+" colocou produto "+ bufferCompartilhado.getBuffer());
-			}else {
-				System.out.println(toString()+" esperando...");
 				
-				try {
-					produtor.wait();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			}else {
+				synchronized (bufferCompartilhado) {
+					try {
+						System.out.println(toString()+" esperando...");
+						bufferCompartilhado.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -54,13 +54,6 @@ public class Produtor extends Operador implements Runnable{
 	}
 	
 	public void start() {
-		produtor.start();
 		run();
-	}
-	
-	@SuppressWarnings("deprecation")
-	public void stop() {
-		produtor.stop();
-		produtor = null;
 	}
 }

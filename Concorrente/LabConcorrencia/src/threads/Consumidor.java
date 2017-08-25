@@ -6,13 +6,11 @@ public class Consumidor extends Operador implements Runnable{
 	
 	private int totalConsumir;
 	private int totalConsumidos;
-	public static Thread consumidor;
 
 	public Consumidor(int id, Buffer bufferCompartilhado, int totalConsumir) {
 		super(id, bufferCompartilhado);
 		setTotalConsumir(totalConsumir);
 		this.totalConsumidos = 0;
-		this.consumidor = new Thread();
 	}
 	
 	// GETTERS AND SETTERS
@@ -27,15 +25,22 @@ public class Consumidor extends Operador implements Runnable{
 
 	@Override
 	public void run() {
+		
 		while(totalConsumidos <= getTotalConsumir()) {
 			
 			if(bufferCompartilhado.getBuffer() > 0) {
 				bufferCompartilhado.getProduto();
 				totalConsumidos++;
 				System.out.println(toString()+" consumiu produto #"+ bufferCompartilhado.getBuffer());
-				Produtor.produtor.notify();
 			}else {
-				System.out.println(toString()+" esperando...");
+				synchronized(bufferCompartilhado) {
+					System.out.println(toString()+" esperando...");
+					try {
+						bufferCompartilhado.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 		System.out.println(toString()+" concluido!");
@@ -43,15 +48,10 @@ public class Consumidor extends Operador implements Runnable{
 	
 	@Override
 	public String toString() {
-		return "Consumidor #1"+getId();
+		return "Consumidor #"+getId();
 	}
 	
 	public void start() {
-		consumidor.start();
 		run();
-	}
-	public void stop() {
-		consumidor.stop();
-		consumidor = null;
 	}
 }
