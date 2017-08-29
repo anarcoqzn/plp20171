@@ -22,8 +22,8 @@ public class Main {
 		Consumidor consumidor2	= new Consumidor(idC2,	bufferCompartilhado, totalConsumirC2);
 		
 		produtor1.start();
-		consumidor1.start();
 		produtor2.start();
+		consumidor1.start();
 		consumidor2.start();
 		
 	}
