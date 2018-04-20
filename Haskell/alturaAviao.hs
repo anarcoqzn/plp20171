@@ -1,27 +1,17 @@
 main = do
     x <- getLine
     let alturaIdeal = read x :: Int
-    y <- getLine
-    let alturaAtual = read y :: Int    
-    estabilizaAviao(alturaIdeal, limiteAtual(alturaIdeal, alturaAtual))
-
-estabilizaAviao :: (Int, Int) -> IO()
-estabilizaAviao(alturaIdeal, limitante) = do
-    y <- getLine
-    let alturaAtual = read y :: Int
-    let limite = limiteAtual(alturaIdeal, alturaAtual)
+    estabilizaAviao(alturaIdeal)
     
-    if(limite == 0) then
-        putStrLn "OK"
-    else
-        if(limite < limitante) then do
-            putStrLn "ADEQUADO"
-            estabilizaAviao(alturaIdeal, limite)
-        else do
-            putStrLn "PERIGO"
-            estabilizaAviao(alturaIdeal, limite)
-      
+
+estabilizaAviao :: Int -> (IO)
+estabilizaAviao (alturaIdeal)
+    = do
+      y <- getLine
+      let altura = read y :: Int
+      if(limiteAtual(alturaIdeal, altura) == 0) then putStrLn("OK")
+      else if(limiteAtual(alturaIdeal, altura) >= 0) then putStrLn("PERIGO") ++ estabilizaAviao(alturaIdeal)
+      else putStrLn("ADEQUADO") ++ estabilizaAviao(alturaIdeal)
+
 limiteAtual :: (Int, Int) -> Int
-limiteAtual(x, y)
-    | (x >= y) = x - y
-    | otherwise = y - x
+limiteAtual (x, y) = x - y 
